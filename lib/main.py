@@ -25,6 +25,11 @@ def render(t, game):
         ''')
 
 
+    # clear message line
+    with t.location(0, 20):
+        for i in range(0, t.width):
+            print(' ', end='')
+
     with t.location(0, 20):
         print(game.message)
 

@@ -5,33 +5,37 @@ def print_welcome(t):
     print(t.center(t.bold('Welcome to Connect 4. Press "q" or "Ctrl-c" to quit.')))
     print('')
 
-def render(t, game):
-    with t.location(0, 3):
-        # todo move to specific location
-        print('''
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-|   |   |   |   |   |   |   |
-.---.---.---.---.---.---.---.
-        ''')
+class View:
+    def __init__(self, term):
+        self.term = term
+
+    def render(self, game):
+        with self.term.location(0, 3):
+            # todo move to specific location
+            print('''
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+    |   |   |   |   |   |   |   |
+    .---.---.---.---.---.---.---.
+            ''')
 
 
-    # clear message line
-    with t.location(0, 20):
-        for i in range(0, t.width):
-            print(' ', end='')
+        # clear message line
+        with self.term.location(0, 20):
+            for i in range(0, self.term.width):
+                print(' ', end='')
 
-    with t.location(0, 20):
-        print(game.message)
+        with self.term.location(0, 20):
+            print(game.message)
 
 class Board:
     def __init__(self):
@@ -48,11 +52,11 @@ class Board:
               column.append(player)
               return True
             else:
-              self.message = 'Column is full'
+              self.message = 'Invalid move. Column is full'
               return False
 
         except IndexError:
-            self.message = 'Column is unknown: {0}'.format(column_index)
+            self.message = 'Invalid move. Column is unknown: {0}'.format(column_index)
             return False
 
 class Game:
@@ -63,10 +67,12 @@ class Game:
 
     def move(self, column_index):
         if self.board.move(column_index, self.current_player):
+
+            # switch player
             if self.current_player == 'Red':
-                self.current_player == 'Blk'
+                self.current_player = 'Blk'
             else:
-                self.current_player == 'Red'
+                self.current_player = 'Red'
 
             self.message = self.__default_message()
 
@@ -76,13 +82,15 @@ class Game:
     def __default_message(self):
         return 'It is players {0} move. Press 0-6 to choose a column'.format(self.current_player)
 
-def main(t):
+def main(term):
     game = Game()
+    view = View(term)
 
-    with t.cbreak():
+    with term.cbreak():
         while True:
-            render(t, game)
-            key = t.inkey()
+            view.render(game)
+
+            key = term.inkey()
             if key == 'q':
                 break
 
@@ -96,7 +104,7 @@ def main(t):
                     pass
 
             except ValueError:
-                pass
+                game.message = 'Invalid move. Column is unknown: {0}'.format(key)
 
 term = Terminal()
 

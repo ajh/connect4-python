@@ -8,34 +8,49 @@ def print_welcome(t):
 class View:
     def __init__(self, term):
         self.term = term
+        self.board_location = [0,3]
+        self.message_location = [0,20]
 
     def render(self, game):
-        with self.term.location(0, 3):
+        with self.term.location(*self.board_location):
             # todo move to specific location
             print('''
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
-    |   |   |   |   |   |   |   |
-    .---.---.---.---.---.---.---.
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
+|   |   |   |   |   |   |   |
+.---.---.---.---.---.---.---.
             ''')
 
-
         # clear message line
-        with self.term.location(0, 20):
+        with self.term.location(*self.message_location):
             for i in range(0, self.term.width):
                 print(' ', end='')
 
-        with self.term.location(0, 20):
+        with self.term.location(*self.message_location):
             print(game.message)
+
+        for x, col in enumerate(game.board.board):
+            for y, cell in enumerate(col):
+                if len(cell) == 3:
+                    with self.term.location(*self.__location(x,y)):
+                        print(cell, end='')
+
+    def __location(self, x, y):
+        x = x * 4 + 1
+        x = x + self.board_location[0]
+        y = ((6 - y) * 2)
+        y = y + self.board_location[1]
+
+        return [x, y]
 
 class Board:
     def __init__(self):

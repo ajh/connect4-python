@@ -14,7 +14,7 @@ class View:
     def render(self, game):
         with self.term.location(*self.board_location):
             # todo move to specific location
-            print('''
+            print(self.term.yellow('''
 .---.---.---.---.---.---.---.
 |   |   |   |   |   |   |   |
 .---.---.---.---.---.---.---.
@@ -28,7 +28,7 @@ class View:
 .---.---.---.---.---.---.---.
 |   |   |   |   |   |   |   |
 .---.---.---.---.---.---.---.
-            ''')
+            '''))
 
         # clear message line
         with self.term.location(*self.message_location):
@@ -40,9 +40,14 @@ class View:
 
         for x, col in enumerate(game.board.board):
             for y, cell in enumerate(col):
-                if len(cell) == 3:
-                    with self.term.location(*self.__location(x,y)):
-                        print(cell, end='')
+                if len(cell) != 3:
+                    continue
+
+                with self.term.location(*self.__location(x,y)):
+                    if cell == 'Red':
+                        print(self.term.red(cell), end='')
+                    else:
+                        print(self.term.black_on_white(cell), end='')
 
     def __location(self, x, y):
         x = x * 4 + 1
